@@ -1,0 +1,53 @@
+[12-Mar-2015 11:40:15 Europe/Ljubljana] PHP Notice:  Undefined variable: thispageurl in /home/devtovarnaidej/domains/kolesar/mod/quizgrading/view.php on line 112
+[12-Mar-2015 11:40:15 Europe/Ljubljana] PHP Notice:  Undefined variable: thispageurl in /home/devtovarnaidej/domains/kolesar/mod/quizgrading/view.php on line 114
+[12-Mar-2015 11:40:15 Europe/Ljubljana] PHP Notice:  Undefined index: courses in /home/devtovarnaidej/domains/kolesar/mod/quizgrading/view.php on line 118
+[12-Mar-2015 11:40:15 Europe/Ljubljana] PHP Notice:  Undefined index: datum in /home/devtovarnaidej/domains/kolesar/mod/quizgrading/view.php on line 130
+[12-Mar-2015 11:40:15 Europe/Ljubljana] PHP Notice:  Undefined property: stdClass::$bookingid in /home/devtovarnaidej/domains/kolesar/mod/quizgrading/lib.php on line 694
+[12-Mar-2015 11:40:15 Europe/Ljubljana] Default exception handler: Error reading from database Debug: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'ORDER BY ba.timemodified DESC
+            LIMIT 1' at line 10
+SELECT *,ba.userid bauserid,bt.userid btuserid FROM
+                mdl_booking_answers AS ba
+                    LEFT JOIN
+                mdl_booking_options AS bo ON bo.id = ba.optionid
+                    LEFT JOIN
+                mdl_booking_teachers AS bt ON ba.optionid = bt.optionid
+                	LEFT JOIN
+                mdl_course_modules cm ON bo.bookingid=cm.instance 
+            WHERE ba.completed = 1 AND cm.id = 
+            ORDER BY ba.timemodified DESC
+            LIMIT 1;
+[array (
+)]
+Error code: dmlreadexception
+* line 443 of /lib/dml/moodle_database.php: dml_read_exception thrown
+* line 1080 of /lib/dml/mysqli_native_moodle_database.php: call to moodle_database->query_end()
+* line 1476 of /lib/dml/moodle_database.php: call to mysqli_native_moodle_database->get_records_sql()
+* line 698 of /mod/quizgrading/lib.php: call to moodle_database->get_record_sql()
+* line 22 of /mod/quizgrading/ajax.php: call to get_quizgrade_view()
+
+[12-Mar-2015 11:40:17 Europe/Ljubljana] PHP Notice:  Undefined variable: thispageurl in /home/devtovarnaidej/domains/kolesar/mod/quizgrading/view.php on line 112
+[12-Mar-2015 11:40:17 Europe/Ljubljana] PHP Notice:  Undefined variable: thispageurl in /home/devtovarnaidej/domains/kolesar/mod/quizgrading/view.php on line 114
+[12-Mar-2015 11:40:17 Europe/Ljubljana] PHP Notice:  Undefined index: datum in /home/devtovarnaidej/domains/kolesar/mod/quizgrading/view.php on line 130
+[12-Mar-2015 11:40:17 Europe/Ljubljana] PHP Notice:  Undefined property: stdClass::$bookingid in /home/devtovarnaidej/domains/kolesar/mod/quizgrading/lib.php on line 694
+[12-Mar-2015 11:40:17 Europe/Ljubljana] Default exception handler: Error reading from database Debug: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'ORDER BY ba.timemodified DESC
+            LIMIT 1' at line 10
+SELECT *,ba.userid bauserid,bt.userid btuserid FROM
+                mdl_booking_answers AS ba
+                    LEFT JOIN
+                mdl_booking_options AS bo ON bo.id = ba.optionid
+                    LEFT JOIN
+                mdl_booking_teachers AS bt ON ba.optionid = bt.optionid
+                	LEFT JOIN
+                mdl_course_modules cm ON bo.bookingid=cm.instance 
+            WHERE ba.completed = 1 AND cm.id = 
+            ORDER BY ba.timemodified DESC
+            LIMIT 1;
+[array (
+)]
+Error code: dmlreadexception
+* line 443 of /lib/dml/moodle_database.php: dml_read_exception thrown
+* line 1080 of /lib/dml/mysqli_native_moodle_database.php: call to moodle_database->query_end()
+* line 1476 of /lib/dml/moodle_database.php: call to mysqli_native_moodle_database->get_records_sql()
+* line 698 of /mod/quizgrading/lib.php: call to moodle_database->get_record_sql()
+* line 22 of /mod/quizgrading/ajax.php: call to get_quizgrade_view()
+

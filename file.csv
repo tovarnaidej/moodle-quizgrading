@@ -1,0 +1,2 @@
+id,quizid,attempt_id,quizname,course,sumgrades,userid,username,firstname,lastname,email,institution,dosezeno_tock,kazenske_tocke,moznih_tock,procent,vprasanja,status_kviza,datum_resitve,datum_vpisa
+4,5,9,"Testni quiz",2,18,2,admin,Admin,User,keki.pwned@gmail.com,,14,4,18,77,44|OK;44|OK;44|OK;44|OK;42|NE;42|NE;42|OK;41|OK;76|OK;70|OK;76|OK,1,0,0
