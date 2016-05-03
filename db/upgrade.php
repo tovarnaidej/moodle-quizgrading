@@ -568,6 +568,60 @@ function xmldb_quizgrading_upgrade($oldversion) {
 		upgrade_mod_savepoint(true, 2015082101, 'quizgrading');	
 	}
 	
+	if($oldversion < 2016042600)
+	{
+		$table = new xmldb_table('quizgrading_results');
+
+
+        $field = new xmldb_field('organizator', XMLDB_TYPE_CHAR, '255', XMLDB_UNSIGNED, XMLDB_NULL, null, '','');	 
+		
+		if ($dbman->field_exists($table, $field))
+		{$dbman->drop_field($table, $field);}
+		
+		if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+		
+		$field = new xmldb_field('lokacija', XMLDB_TYPE_CHAR, '255', XMLDB_UNSIGNED, XMLDB_NULL, null, '','');	 
+		
+		if ($dbman->field_exists($table, $field))
+		{$dbman->drop_field($table, $field);}
+		
+		if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+		
+		
+		upgrade_mod_savepoint(true, 2016042600, 'quizgrading');	
+	}
+	
+	if($oldversion < 2016042601)
+	{
+		$table = new xmldb_table('quizgrading');
+
+
+        $field = new xmldb_field('organizator', XMLDB_TYPE_CHAR, '255', XMLDB_UNSIGNED, XMLDB_NULL, null, '','');	 
+		
+		if ($dbman->field_exists($table, $field))
+		{$dbman->drop_field($table, $field);}
+		
+		if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+		
+		$field = new xmldb_field('lokacija', XMLDB_TYPE_CHAR, '255', XMLDB_UNSIGNED, XMLDB_NULL, null, '','');	 
+		
+		if ($dbman->field_exists($table, $field))
+		{$dbman->drop_field($table, $field);}
+		
+		if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+		
+		
+		upgrade_mod_savepoint(true, 2016042601, 'quizgrading');	
+	}
+	
 	/*
 	 * <FIELD NAME="max_kaz_poligon" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="timecreated"/>
         <FIELD NAME="max_kaz_voznja" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="timecreated"/>

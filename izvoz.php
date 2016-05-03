@@ -44,7 +44,7 @@ if($mentor)
 }
 
 $query = "SELECT id,quizgradingid,quizid,attempt_id,quizname,course,sumgrades,userid,username,firstname,lastname,email,institution,mentorid,mentor,dosezeno_tock,kazenske_tocke,moznih_tock,procent,vprasanja,status_kviza,DATE(FROM_UNIXTIME(datum_rojstva)) datum_rojstva,DATE(FROM_UNIXTIME(datum_resitve)) datum_resitve,DATE(FROM_UNIXTIME(datum_vpisa)) datum_vpisa,
-startna_st,tocke_poligon,tocke_voznja,uvrstitev_posamezniki,skupina,tocke_skupina,uvrstitev_skupina,tocke_skupaj,optionid,naziv_izvedbe
+startna_st,tocke_poligon,tocke_voznja,uvrstitev_posamezniki,skupina,tocke_skupina,uvrstitev_skupina,tocke_skupaj,optionid,naziv_izvedbe,lokacija,organizator
 FROM {quizgrading_results} WHERE quizid=? ".$datumQuery.$osQuery.$bookingQuery.$letoQuery.$mentorQuery;
 
 if(!is_null($_GET['datum']) && $_GET['datum'] > 0)
@@ -54,7 +54,7 @@ if(!is_null($_GET['datum']) && $_GET['datum'] > 0)
 	$datumQuery = " AND DATE(FROM_UNIXTIME(`datum_resitve` )) = DATE('".$datumStr."')";
 	
 	$query = "SELECT id,quizgradingid,quizid,attempt_id,quizname,course,sumgrades,userid,username,firstname,lastname,email,institution,mentorid,mentor,dosezeno_tock,kazenske_tocke,moznih_tock,procent,vprasanja,status_kviza,DATE(FROM_UNIXTIME(datum_rojstva)) datum_rojstva,DATE(FROM_UNIXTIME(datum_resitve)) datum_resitve,DATE(FROM_UNIXTIME(datum_vpisa)) datum_vpisa,
-startna_st,tocke_poligon,tocke_voznja,uvrstitev_posamezniki,skupina,tocke_skupina,uvrstitev_skupina,tocke_skupaj,optionid,naziv_izvedbe
+startna_st,tocke_poligon,tocke_voznja,uvrstitev_posamezniki,skupina,tocke_skupina,uvrstitev_skupina,tocke_skupaj,optionid,naziv_izvedbe,lokacija,organizator
 FROM {quizgrading_results} WHERE quizid=? ".$datumQuery.$osQuery.$bookingQuery.$letoQuery.$mentorQuery;
 
 	$quizResult = $DB->get_records_sql($query,array($_GET['quizid']));
@@ -62,7 +62,7 @@ FROM {quizgrading_results} WHERE quizid=? ".$datumQuery.$osQuery.$bookingQuery.$
 else
 {
 	$query = "SELECT id,quizgradingid,quizid,attempt_id,quizname,course,sumgrades,userid,username,firstname,lastname,email,institution,mentorid,mentor,dosezeno_tock,kazenske_tocke,moznih_tock,procent,vprasanja,status_kviza,DATE(FROM_UNIXTIME(datum_rojstva)) datum_rojstva,DATE(FROM_UNIXTIME(datum_resitve)) datum_resitve,DATE(FROM_UNIXTIME(datum_vpisa)) datum_vpisa,
-startna_st,tocke_poligon,tocke_voznja,uvrstitev_posamezniki,skupina,tocke_skupina,uvrstitev_skupina,tocke_skupaj,optionid,naziv_izvedbe
+startna_st,tocke_poligon,tocke_voznja,uvrstitev_posamezniki,skupina,tocke_skupina,uvrstitev_skupina,tocke_skupaj,optionid,naziv_izvedbe,lokacija,organizator
 FROM {quizgrading_results} WHERE quizid=? ".$datumQuery.$osQuery.$bookingQuery.$letoQuery.$mentorQuery;
 
 	$quizResult = $DB->get_records_sql($query,array($_GET['quizid']));

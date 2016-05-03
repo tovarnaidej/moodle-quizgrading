@@ -665,7 +665,8 @@ function is_quiz_success_regrading($quizid,$zapisi,$gradingid)
 		
 				$bookings = $DB->get_record_sql($query);
 				
-				//var_dump($bookings);
+				var_dump($bookings);
+				echo "<br /><br />";
 				$mentor = "";
 				
 				if($bookings)
@@ -707,6 +708,9 @@ function is_quiz_success_regrading($quizid,$zapisi,$gradingid)
 						$record->optionid = ($bookings && $bookings->optionid) ? $bookings->optionid : 0;
 						$record->naziv_izvedbe = ($bookings) ? $bookings->text : "";
 						$record->mentorid = $bookings->btuserid;
+						$record->startna_st = $bookings->numrec;
+						$record->organizator = $bookings->institution;
+						$record->lokacija = $bookings->location;
 					}
 				}
 				catch(Exception $e) {}
@@ -942,8 +946,6 @@ function is_quiz_success($quizid,$attemptid,$zapisi,$gradingid)
 	}
 
 
-
-
 	if($zapisi)
 	{
 		require_once($CFG->dirroot.'/user/profile/lib.php');
@@ -968,6 +970,7 @@ function is_quiz_success($quizid,$attemptid,$zapisi,$gradingid)
             LIMIT 1;";
 	
 			$bookings = $DB->get_record_sql($query);
+			
 
 			$mentor = false;
 
@@ -996,6 +999,7 @@ function is_quiz_success($quizid,$attemptid,$zapisi,$gradingid)
 			$record->status_kviza = ($naredil) ? 1 : 0;
 			$record->datum_resitve = $attempt->timefinish;
 			$record->datum_vpisa = strtotime("now");
+			
 			try
 			{
 				if($mentor)
@@ -1009,6 +1013,9 @@ function is_quiz_success($quizid,$attemptid,$zapisi,$gradingid)
 					$record->optionid = ($bookings && $bookings->optionid) ? $bookings->optionid : 0;
 					$record->naziv_izvedbe = ($bookings) ? $bookings->text : "";
 					$record->mentorid = $bookings->btuserid;
+					$record->startna_st = $bookings->numrec;
+					$record->organizator = $bookings->institution;
+					$record->lokacija = $bookings->location;
 				}
 			}
 			catch(Exception $e) {}
@@ -1765,11 +1772,16 @@ function get_quizgrade_view($quizid,$zapisi,$student = false,$gradingid,$date,$o
 	$st_dresa = ($page*25)+1;
 	
 	//var_dump($gradingResults);
-
+	$stVrstice = ($page*25)+1;
 	foreach($gradingResults as $key=>$object)
 	{
-		$tableHead = Array('<a class="order" id="optionid" href="">Naziv izvedbe</a>');
-		$tableContent = Array($object->naziv_izvedbe);
+		
+		$tableHead = Array('St.');
+		$tableContent = Array($stVrstice);
+		$stVrstice++;
+		
+		$tableHead[] = ('<a class="order" id="optionid" href="">Naziv izvedbe</a>');
+		$tableContent[] = ($object->naziv_izvedbe);
 		 
 		$tableHead[] = '<a class="order" id="datum_resitve" href="">Datum izvedbe</a>';
 		$tableContent[] = date("d.m.Y",$object->datum_resitve);

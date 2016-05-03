@@ -87,6 +87,8 @@ class mod_quizgrading_mod_form extends moodleform_mod {
 			'4' => 'Tekmovanje skupin'
 		);
 		$mform->addElement('select', 'tip_instance', 'Tip instance', $optionsTip);
+		$mform->addElement('text', 'organizator', 'Organizator', array('size' => '24'));
+		$mform->addElement('text', 'lokacija', 'Lokacija', array('size' => '24'));
 
         $mform->addElement('header', 'quizgradingfieldset', 'Nastavitve');
         $mform->addElement('text', 'procent', 'Minimalno procentov', array('size' => '24'));
@@ -109,6 +111,8 @@ class mod_quizgrading_mod_form extends moodleform_mod {
 		    'NE' => 'NE'
 		);
 		$mform->addElement('select', 'izpis_opravil', 'Naj se izpiše podatek ali je udeleženec kviz opravil', $optionsOpravil);
+		
+		
 		
 		
 
