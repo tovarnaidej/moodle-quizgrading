@@ -573,7 +573,7 @@ function xmldb_quizgrading_upgrade($oldversion) {
 		$table = new xmldb_table('quizgrading_results');
 
 
-        $field = new xmldb_field('organizator', XMLDB_TYPE_CHAR, '255', XMLDB_UNSIGNED, XMLDB_NULL, null, '','');	 
+        $field = new xmldb_field('organizator', XMLDB_TYPE_CHAR, '255', XMLDB_UNSIGNED, null, null, '','');	 
 		
 		if ($dbman->field_exists($table, $field))
 		{$dbman->drop_field($table, $field);}
@@ -582,7 +582,7 @@ function xmldb_quizgrading_upgrade($oldversion) {
             $dbman->add_field($table, $field);
         }
 		
-		$field = new xmldb_field('lokacija', XMLDB_TYPE_CHAR, '255', XMLDB_UNSIGNED, XMLDB_NULL, null, '','');	 
+		$field = new xmldb_field('lokacija', XMLDB_TYPE_CHAR, '255', XMLDB_UNSIGNED, null, null, '','');	 
 		
 		if ($dbman->field_exists($table, $field))
 		{$dbman->drop_field($table, $field);}
@@ -600,7 +600,7 @@ function xmldb_quizgrading_upgrade($oldversion) {
 		$table = new xmldb_table('quizgrading');
 
 
-        $field = new xmldb_field('organizator', XMLDB_TYPE_CHAR, '255', XMLDB_UNSIGNED, XMLDB_NULL, null, '','');	 
+        $field = new xmldb_field('organizator', XMLDB_TYPE_CHAR, '255', XMLDB_UNSIGNED, null, null, '','');	 
 		
 		if ($dbman->field_exists($table, $field))
 		{$dbman->drop_field($table, $field);}
@@ -609,7 +609,7 @@ function xmldb_quizgrading_upgrade($oldversion) {
             $dbman->add_field($table, $field);
         }
 		
-		$field = new xmldb_field('lokacija', XMLDB_TYPE_CHAR, '255', XMLDB_UNSIGNED, XMLDB_NULL, null, '','');	 
+		$field = new xmldb_field('lokacija', XMLDB_TYPE_CHAR, '255', XMLDB_UNSIGNED, null, null, '','');	 
 		
 		if ($dbman->field_exists($table, $field))
 		{$dbman->drop_field($table, $field);}
