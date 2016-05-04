@@ -18,6 +18,8 @@ if(isset($_POST['firstname']) AND is_numeric($_POST['id']))
 	$record->lastname = $_POST['lastname'];
 	$record->email = $_POST['email'];
 	$record->institution = $_POST['institution'];
+	$record->organizator = $_POST['organizator'];
+	$record->lokacija = $_POST['lokacija'];
 	//$record->quizname = $_POST['quizname'];
 	
 	try
@@ -41,7 +43,12 @@ if($quizResult)
 	$vprasanja = explode(";", $vprasanja);
 	
 	$config_db = $DB->get_record('quizgrading_config', array('quizid'=>$_GET['quizid']));
-	$config_db = explode(";", $config_db->config);
+	
+	if(isset($config_db->config))
+	{
+		$config_db = explode(";", $config_db->config);
+	}
+	
 	
  
 	$tipIzpisa = "dosezene";
@@ -67,6 +74,9 @@ if($quizResult)
 	echo "<div><b>Institucija</b>: <input type='text' name='institution' value='".$quizResult->institution."' /> </div>";	
 	echo "<div><b>E-pošta</b>: <input type='text' name='email' value='".$quizResult->email."' /> </div>";
 	echo "<div><b>Datum rojstva</b>: <input type='text' name='datum_rojstva' value='".date('d.m.Y',$quizResult->datum_rojstva)."' /> </div>";	
+	
+	echo "<div><b>Organizator</b>: <input type='text' name='organizator' value='".$quizResult->organizator."' /> </div>";	
+	echo "<div><b>Lokacija</b>: <input type='text' name='lokacija' value='".$quizResult->lokacija."' /> </div>";	
 	
 	echo "<div><b>Možnih točk</b>: ".$quizResult->moznih_tock." </div>";
 	
