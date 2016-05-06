@@ -1633,7 +1633,7 @@ function get_quizgrade_view($quizid,$zapisi,$student = false,$gradingid,$date,$o
 				}
 				else
 				{
-					if($object->tocke != $tocke_prev)
+					if($object->tocke != $tocke_prev OR $object->tocke == 0)
 					{
 						if($delitev) { $uvrstitev+=$stevec_delitev; $stevec_delitev = 0; }
 						
@@ -1918,20 +1918,20 @@ function get_quizgrade_view($quizid,$zapisi,$student = false,$gradingid,$date,$o
 				if($tipIzpisa == "dosezene")
 				{
 					$skupaj_tock_izpit = $object->dosezeno_tock+$object->tocke_voznja+$object->tocke_poligon;
-					$tableContent[] = ($skupaj_tock_izpit > 0) ? $skupaj_tock_izpit : 0;
+					$tableContent[] = ($skupaj_tock_izpit >= 0) ? $skupaj_tock_izpit : 0;
 				}
 				else 
 				{
 					$skupaj_tock_izpit = $object->kazenske_tocke+$object->tocke_voznja+$object->tocke_poligon;
-					$tableContent[] = ($skupaj_tock_izpit > 0) ? $skupaj_tock_izpit : 0;
+					$tableContent[] = ($skupaj_tock_izpit >= 0) ? $skupaj_tock_izpit : 0;
 				}
 			}
 			else
 			{
 				$tocke_poligon = 0;
 				$tocke_voznja = 0;
-				if($object->tocke_poligon > 0) $tocke_poligon = $object->tocke_poligon;
-				if($object->tocke_voznja > 0) $tocke_voznja = $object->tocke_voznja;
+				if($object->tocke_poligon >= 0) $tocke_poligon = $object->tocke_poligon;
+				if($object->tocke_voznja >= 0) $tocke_voznja = $object->tocke_voznja;
 				
 				$izpitOpravil = 0;
 				
@@ -1956,7 +1956,7 @@ function get_quizgrade_view($quizid,$zapisi,$student = false,$gradingid,$date,$o
 	
 			}
 	
-			if($skupaj_tock_izpit > 0)
+			if($skupaj_tock_izpit >= 0)
 			{
 				$object->tocke_skupaj = $skupaj_tock_izpit;
 				$DB->update_record('quizgrading_results', $object);

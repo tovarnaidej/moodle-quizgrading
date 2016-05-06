@@ -44,27 +44,33 @@ class mod_quizgrading_quiz_observer {
 			case "coreeventcourse_module_updated":
 				//var_dump($event->other['instanceid']);
 				
-				$quizgrading = $DB->get_records('quizgrading',array('id'=>$event->other['instanceid']),'tip_instance ASC');
-				$quizgrading = $quizgrading[$event->other['instanceid']];
+				if(isset($event->other['instanceid']))
+				{
+					$quizgrading = $DB->get_records('quizgrading',array('id'=>$event->other['instanceid']),'tip_instance ASC');
+					$quizgrading = $quizgrading[$event->other['instanceid']];
+					
+					if(is_object($quizgrading))
+					{
+						$query = "SELECT * FROM
+			                {booking_answers} AS ba
+			                    LEFT JOIN
+			                {booking_options} AS bo ON bo.id = ba.optionid
+			                    LEFT JOIN
+			                {booking_teachers} AS bt ON ba.optionid = bt.optionid
+			                	LEFT JOIN
+			                {course_modules} cm ON bo.bookingid=cm.instance 
+			            WHERE cm.id = ".$quizgrading->bookingid."
+			            ORDER BY ba.timemodified DESC
+			            LIMIT 1;";
 				
-				$query = "SELECT * FROM
-	                {booking_answers} AS ba
-	                    LEFT JOIN
-	                {booking_options} AS bo ON bo.id = ba.optionid
-	                    LEFT JOIN
-	                {booking_teachers} AS bt ON ba.optionid = bt.optionid
-	                	LEFT JOIN
-	                {course_modules} cm ON bo.bookingid=cm.instance 
-	            WHERE cm.id = ".$quizgrading->bookingid."
-	            ORDER BY ba.timemodified DESC
-	            LIMIT 1;";
-		
-				$bookings = $DB->get_record_sql($query);
-				
-				$quizgrading->organizator = $bookings->institution;
-				$quizgrading->lokacija = $bookings->location;
-				
-				$DB->update_record('quizgrading', $quizgrading);
+						$bookings = $DB->get_record_sql($query);
+						
+						$quizgrading->organizator = $bookings->institution;
+						$quizgrading->lokacija = $bookings->location;
+						
+						$DB->update_record('quizgrading', $quizgrading);
+					}
+				}
 				
 				break;
 		}
