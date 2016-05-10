@@ -1185,7 +1185,7 @@ function get_quiz_bookings($quizid,$solsko_leto)
 		
 	}
 	
-	$query = "SELECT optionid,naziv_izvedbe FROM {quizgrading_results} WHERE quizid=:quizid ".$solskoLetoQuery." GROUP BY optionid";
+	$query = "SELECT optionid,naziv_izvedbe FROM {quizgrading_results} WHERE quizid=:quizid ".$solskoLetoQuery." GROUP BY optionid ORDER BY naziv_izvedbe ASC";
 	$bookings = $DB->get_records_sql($query, array('quizid'=>$quizid));
 	
 	return $bookings;
@@ -1225,7 +1225,7 @@ function get_quiz_bookings_mentor($quizid,$mentorID,$cm)
 	}
 	$userIdji[] = $mentorID;
 	
-	$query = "SELECT optionid,naziv_izvedbe FROM {quizgrading_results} WHERE quizid=:quizid AND mentorid in (".$mentorID.") GROUP BY optionid";
+	$query = "SELECT optionid,naziv_izvedbe FROM {quizgrading_results} WHERE quizid=:quizid AND mentorid in (".$mentorID.") GROUP BY optionid ORDER BY naziv_izvedbe ASC";
 	$bookings = $DB->get_records_sql($query, array('quizid'=>$quizid));
 	
 	return $bookings;
@@ -1311,7 +1311,7 @@ function get_quiz_institutions_mentor($quizid,$cm = 0,$mentorID = 0,$bookingid=n
 		$datumQuery = " AND DATE(FROM_UNIXTIME(`datum_resitve`)) = DATE('".$datum."') ";
 	}
 
-	$query = "SELECT DISTINCT(institution) institution FROM {quizgrading_results} att WHERE att.mentorid IN (".$mentorID.") ".$bookingQuery.$datumQuery." AND quizid=".$quizid." ORDER BY datum_resitve DESC";
+	$query = "SELECT DISTINCT(institution) institution FROM {quizgrading_results} att WHERE att.mentorid IN (".$mentorID.") ".$bookingQuery.$datumQuery." AND quizid=".$quizid." ORDER BY institution ASC";
 	//$query = "SELECT DISTINCT(institution) institution FROM {quiz_attempts} att,{user} usr WHERE att.userid=usr.id AND att.userid IN (".implode(',',$userIdji).") AND att.state='finished' AND quiz=".$quizid." ORDER BY timefinish DESC";
 	
 	$quizes = $DB->get_records_sql($query);
@@ -1346,7 +1346,7 @@ function get_quiz_institutions($quizid,$bookingid=null,$datum=null,$solsko_leto)
 		
 	}
 
-	$query = "SELECT DISTINCT(institution) institution FROM {quizgrading_results} att WHERE quizid=".$quizid.$bookingQuery.$datumQuery.$solskoLetoQuery." ORDER BY datum_resitve DESC";
+	$query = "SELECT DISTINCT(institution) institution FROM {quizgrading_results} att WHERE quizid=".$quizid.$bookingQuery.$datumQuery.$solskoLetoQuery." ORDER BY institution ASC";
 	//$query = "SELECT DISTINCT(institution) institution FROM {quiz_attempts} att,{user} usr WHERE att.userid=usr.id AND att.userid IN (".implode(',',$userIdji).") AND att.state='finished' AND quiz=".$quizid." ORDER BY timefinish DESC";
 	 
 	$quizes = $DB->get_records_sql($query);
@@ -1718,7 +1718,7 @@ function get_quizgrade_view($quizid,$zapisi,$student = false,$gradingid,$date,$o
 			else {
 		
 	
-				if($object->tocke != $tocke_prev)
+				if($object->tocke != $tocke_prev OR $object->tocke == 0)
 				{
 					if($delitev) { $uvrstitev+=$stevec_delitev; $stevec_delitev = 0; }
 					
@@ -1776,103 +1776,21 @@ function get_quizgrade_view($quizid,$zapisi,$student = false,$gradingid,$date,$o
 	foreach($gradingResults as $key=>$object)
 	{
 		
-		$tableHead = Array('St.');
+		$tableHead = Array('Zap.<br />št.');
 		$tableContent = Array($stVrstice);
 		$stVrstice++;
 		
-		$tableHead[] = ('<a class="order" id="optionid" href="">Naziv izvedbe</a>');
-		$tableContent[] = ($object->naziv_izvedbe);
-		 
-		$tableHead[] = '<a class="order" id="datum_resitve" href="">Datum izvedbe</a>';
-		$tableContent[] = date("d.m.Y",$object->datum_resitve);
-		
-		$url = new moodle_url('/user/profile.php', array('id'=>$object->userid));
-		$link = html_writer::link($url, $object->firstname);
-		$tableHead[] = '<a class="order" id="firstname" href="">Ime</a>';
-		$tableContent[] = $link;
-		
-		$url = new moodle_url('/user/profile.php', array('id'=>$object->userid));
-		$link = html_writer::link($url, $object->lastname);
-		$tableHead[] = '<a class="order" id="lastname" href="">Priimek</a>';
-		$tableContent[] = $link;
-		
-		if(!$mentor && !$student)
-		{
-			$url = new moodle_url('/user/profile.php', array('id'=>$object->mentorid));
-			$link = html_writer::link($url, $object->mentorid);
-			$tableHead[] = '<a class="order" id="mentorid" href="">Mentor ID</a>';
-			$tableContent[] = $link;
-		}
-		
-		$user = $DB->get_record('user', array('id'=>$object->userid));
-		$userArr = get_object_vars($user);
-
-		foreach($attrConf as $conf)
-		{
-			$tableHead[] = '<a class="order" id="'.$conf->atribut.'" href="">'.$conf->atribut.'</a>';
-			$tableContent[] = $userArr[$conf->atribut];
-		}
-		
-
-		if($gradingConfig->tip_instance == "1")
-		{
-			/*ZAČETEK VPRAŠANJ*/
-			$vprasanja = explode(",",$object->vprasanja);
-			
-			foreach($vprasanja as $vprasanje)
-			{
-				$split = explode("|",$vprasanje);
-				
-				$cat = $DB->get_record('quizgrading_category_config',array('category'=>$split[0],'quizid'=>$quizid));
-	
-				if(!$cat)
-				{
-					$cat = $DB->get_record('question_categories',array('id'=>$split[0]));
-					$cat->izpisi_kaj = substr($cat->name, 0,stripos($cat->name,' '));
-					$cat->izpisi = "DA";
-				}
-				
-				if($tipIzpisa == "dosezene" && $cat->izpisi == "DA")
-				{
-					$tableHead[] = "";
-					$tableContent[] = "<div style='background-color:".(($split[1] == "OK") ? "#cfc" : "#fcc").";'>".$cat->izpisi_kaj."</div>";
-				}
-			}
-		}
-		
-		if($izpisiUspesnost == "DA")
-		{
-			$tableHead[] = "<a class='order' id='status_kviza' href=''>Opravil</a>";
-			$tableContent[] = (($object->status_kviza) ? "<div style='width:20px;background-color:#cfc;'>da</div>" : "<div style='width:20px;background-color:#fcc;'>ne</div>");
-		}
-		
-		
-		if($zapisi)
-		{
-			if($tipIzpisa == "dosezene")
-			{
-				$tableHead[] = "<a class='order' style='text-align:center;' id='dosezeno_tock' href=''>Točke <br />(dosežene)</a>";
-				$tableContent[] = $object->dosezeno_tock;
-			}
-			else 
-			{
-				$tableHead[] = "<a class='order' style='text-align:center;' id='kazenske_tocke' href=''>Točke <br />(kazenske)</a>";
-				$tableContent[] = $object->kazenske_tocke;
-			}
-		}
-		
 		if($gradingConfig->tip_instance != "1")
 		{
-		
-			$startnaStCell = new html_table_cell();
+		$startnaStCell = new html_table_cell();
 			$startnaStCell->style ='text-align:center;';
 			
 			if($student && !$mentor)
 			{
-				$startnaStCell->text = "<a class='order' id='startna_st' href=''>Štartna št.</a>";
+				$startnaStCell->text = "<a class='order' id='startna_st' href=''>Štart.<br />št.</a>";
 			}
 			else {
-				$startnaStCell->text = "<a class='order' id='startna_st' href=''>Štartna št. <button type='button'>Generiraj</button></a>";
+				$startnaStCell->text = "<a class='order' id='startna_st' href=''>Štart.<br />št.</a>";
 			}
 			
 			
@@ -1901,15 +1819,73 @@ function get_quizgrade_view($quizid,$zapisi,$student = false,$gradingid,$date,$o
 				}
 				$st_dresa++;
 			}
+		}
 		
+		$url = new moodle_url('/user/profile.php', array('id'=>$object->userid));
+		$link = html_writer::link($url, $object->firstname);
+		$tableHead[] = '<a class="order" id="firstname" href="">Ime</a>';
+		$tableContent[] = $link;
 		
-			$tableHead[] = "<a class='order' id='tocke_poligon' href=''>Poligon</a>";
-			$tableContent[] = "<a href='' style='".(($object->tocke_poligon >= 0 && $object->tocke_poligon <= $gradingConfig->max_kaz_poligon) ? "background-color:#cfc;" : "background-color:#fcc;")."' class='clickable' id='".$object->id."-tocke_poligon'>".$object->tocke_poligon."</a>";
+		$url = new moodle_url('/user/profile.php', array('id'=>$object->userid));
+		$link = html_writer::link($url, $object->lastname);
+		$tableHead[] = '<a class="order" id="lastname" href="">Priimek</a>';
+		$tableContent[] = $link;
+		
+		if($izpisiUspesnost == "DA" && $gradingConfig->tip_instance != "4")
+		{
+			$tableHead[] = "<a class='order' id='status_kviza' href=''>Opravil</a>";
+			$tableContent[] = (($object->status_kviza) ? "<div style='width:20px;background-color:#cfc;'>da</div>" : "<div style='width:20px;background-color:#fcc;'>ne</div>");
+		}
+		
+		if($zapisi && $gradingConfig->tip_instance != "4")
+		{
+			if($gradingConfig->tip_instance == "3")
+			{
+				if($tipIzpisa == "dosezene")
+				{
+					$tableHead[] = "<a class='order' style='text-align:center;' id='dosezeno_tock' href=''>Točke <br />(teorija)</a>";
+					$tableContent[] = $object->dosezeno_tock;
+				}
+				else 
+				{
+					$tableHead[] = "<a class='order' style='text-align:center;' id='kazenske_tocke' href=''>Točke <br />(teorija)</a>";
+					$tableContent[] = $object->kazenske_tocke;
+				}
+			}
+			else
+			{
+				if($tipIzpisa == "dosezene")
+				{
+					$tableHead[] = "<a class='order' style='text-align:center;' id='dosezeno_tock' href=''>Točke <br />(dosežene)</a>";
+					$tableContent[] = $object->dosezeno_tock;
+				}
+				else 
+				{
+					$tableHead[] = "<a class='order' style='text-align:center;' id='kazenske_tocke' href=''>Točke <br />(kazenske)</a>";
+					$tableContent[] = $object->kazenske_tocke;
+				}
+			}
 			
-			$tableHead[] = "<a class='order' id='tocke_voznja' href=''>Vožnja</a>";
-			$tableContent[] = "<a href='' style='".(($object->tocke_voznja >= 0 && $object->tocke_voznja <= $gradingConfig->max_kaz_voznja) ? "background-color:#cfc;" : "background-color:#fcc;")."' class='clickable' id='".$object->id."-tocke_voznja'>".$object->tocke_voznja."</a>";
+		}
+
+		if($gradingConfig->tip_instance != "1")
+		{
 			
-			$tableHead[] = "<a class='order' id='tocke_skupaj' href=''>Skupaj</a>";
+			if($gradingConfig->tip_instance != "4")
+			{
+				$tableHead[] = "<a class='order' id='tocke_poligon' href=''>Poligon</a>";
+				$tableContent[] = "<a href='' style='".(($object->tocke_poligon >= 0 && $object->tocke_poligon <= $gradingConfig->max_kaz_poligon) ? "background-color:#cfc;" : "background-color:#fcc;")."' class='".((($gradingConfig->tip_instance != "4") ? 'clickable' : ''))."' id='".$object->id."-tocke_poligon'>".$object->tocke_poligon."</a>";
+			
+				$tableHead[] = "<a class='order' id='tocke_voznja' href=''>Vožnja</a>";
+				$tableContent[] = "<a href='' style='".(($object->tocke_voznja >= 0 && $object->tocke_voznja <= $gradingConfig->max_kaz_voznja) ? "background-color:#cfc;" : "background-color:#fcc;")."' class='".((($gradingConfig->tip_instance != "4") ? 'clickable' : ''))."' id='".$object->id."-tocke_voznja'>".$object->tocke_voznja."</a>";
+			}
+			if($gradingConfig->tip_instance != "4")
+			{
+				$tableHead[] = "<a class='order' id='tocke_skupaj' href=''>Skupaj</a>";
+			}
+			else {
+				$tableHead[] = "<a class='order' id='tocke_skupaj' href=''>Skupaj<br />posamezno</a>";
+			}
 			
 			$skupaj_tock_izpit = 0;
 			
@@ -1961,6 +1937,44 @@ function get_quizgrade_view($quizid,$zapisi,$student = false,$gradingid,$date,$o
 				$object->tocke_skupaj = $skupaj_tock_izpit;
 				$DB->update_record('quizgrading_results', $object);
 			}
+
+		}
+		
+
+		$user = $DB->get_record('user', array('id'=>$object->userid));
+		$userArr = get_object_vars($user);
+
+		foreach($attrConf as $conf)
+		{
+			$tableHead[] = '<a class="order" id="'.$conf->atribut.'" href="">'.$conf->atribut.'</a>';
+			$tableContent[] = $userArr[$conf->atribut];
+		}
+		
+
+		if($gradingConfig->tip_instance == "1")
+		{
+			/*ZAČETEK VPRAŠANJ*/
+			$vprasanja = explode(",",$object->vprasanja);
+			
+			foreach($vprasanja as $vprasanje)
+			{
+				$split = explode("|",$vprasanje);
+				
+				$cat = $DB->get_record('quizgrading_category_config',array('category'=>$split[0],'quizid'=>$quizid));
+	
+				if(!$cat)
+				{
+					$cat = $DB->get_record('question_categories',array('id'=>$split[0]));
+					$cat->izpisi_kaj = substr($cat->name, 0,stripos($cat->name,' '));
+					$cat->izpisi = "DA";
+				}
+				
+				if($tipIzpisa == "dosezene" && $cat->izpisi == "DA")
+				{
+					$tableHead[] = "";
+					$tableContent[] = "<div style='background-color:".(($split[1] == "OK") ? "#cfc" : "#fcc").";'>".$cat->izpisi_kaj."</div>";
+				}
+			}
 		}
 
 		if($preracunaj)
@@ -1981,7 +1995,7 @@ function get_quizgrade_view($quizid,$zapisi,$student = false,$gradingid,$date,$o
 
 		if($gradingConfig->tip_instance == "3" )
 		{
-			$tableHead[] = "<a class='order' id='uvrstitev_posamezniki' href=''>Vrstni red posamezniki</a>";
+			$tableHead[] = "<a class='order' id='uvrstitev_posamezniki' href=''>Vrstni<br />red<br />posamezno</a>";
 			$tableContent[] = $object->uvrstitev_posamezniki;
 		}
 		
@@ -1991,7 +2005,7 @@ function get_quizgrade_view($quizid,$zapisi,$student = false,$gradingid,$date,$o
 			$tableContent[] = "<a href='' class='clickable' id='".$object->id."-skupina'>".$object->skupina."</a>";
 			
 			
-			$tableHead[] = "<a class='order' id='tocke_skupina' href=''>Skupaj skupina</a>";
+			$tableHead[] = "<a class='order' id='tocke_skupina' href=''>Skupaj<br />skupina</a>";
 			
 			if($object->skupina > 0)
 			{
@@ -2011,22 +2025,31 @@ function get_quizgrade_view($quizid,$zapisi,$student = false,$gradingid,$date,$o
 					
 				
 					if($tipIzpisa == "dosezene"){
-						$queryTockeSkupina = "SELECT SUM(dosezeno_tock+IF(tocke_poligon>0,tocke_poligon,0)+IF(tocke_voznja > 0,tocke_voznja,0)) tocke_skupina FROM {quizgrading_results} WHERE skupina=".$object->skupina." AND quizid=".$object->quizid;
+						$queryTockeSkupina = "SELECT SUM(dosezeno_tock+IF(tocke_poligon>0,tocke_poligon,0)+IF(tocke_voznja > 0,tocke_voznja,0)) tocke_skupina FROM {quizgrading_results} WHERE skupina=".$object->skupina." AND quizid=".$object->quizid.$datumQuery2;
 					}
 					else {
-						$queryTockeSkupina = "SELECT SUM(kazenske_tocke+IF(tocke_poligon>0,tocke_poligon,0)+IF(tocke_voznja > 0,tocke_voznja,0)) tocke_skupina FROM {quizgrading_results} WHERE skupina=".$object->skupina." AND quizid=".$object->quizid;
+						$queryTockeSkupina = "SELECT SUM(kazenske_tocke+IF(tocke_poligon>0,tocke_poligon,0)+IF(tocke_voznja > 0,tocke_voznja,0)) tocke_skupina FROM {quizgrading_results} WHERE skupina=".$object->skupina." AND quizid=".$object->quizid.$datumQuery2;
 						
 					}
 				}
 				
 				
 				$tockeSkupina = $DB->get_record_sql($queryTockeSkupina);
-				$tableContent[] = $tockeSkupina->tocke_skupina;
+				
+				if($datumQuery2 == "")
+				{
+					$tableContent[] = $object->tocke_skupina;
+				}
+				else
+				{
+					$tableContent[] = $tockeSkupina->tocke_skupina;
+				}
+				
 				$object->tocke_skupina = $tockeSkupina->tocke_skupina;
 				
 				//$tockeSkupina = null;
 				
-				if($preracunaj && $tockeSkupina->tocke_skupina > 0)
+				if($preracunaj && $tockeSkupina->tocke_skupina > 0 && $datumQuery2 != "" && $mentor)
 				{
 					$DB->update_record('quizgrading_results', $object);
 				}
@@ -2037,9 +2060,23 @@ function get_quizgrade_view($quizid,$zapisi,$student = false,$gradingid,$date,$o
 				$tableContent[] = 0;
 			}
 			
-			$tableHead[] = "<a class='order' id='uvrstitev_skupina' href=''>Vrstni red skupina</a>";
+			$tableHead[] = "<a class='order' id='uvrstitev_skupina' href=''>Vrstni<br />red<br />skupina</a>";
 			$tableContent[] = $object->uvrstitev_skupina;
 		
+		}
+
+		$tableHead[] = ('<a class="order" id="optionid" href="">Naziv izvedbe</a>');
+		$tableContent[] = ($object->naziv_izvedbe);
+		 
+		$tableHead[] = '<a class="order" id="datum_resitve" href="">Datum izvedbe</a>';
+		$tableContent[] = date("d.m.Y",$object->datum_resitve);
+
+		if(!$mentor && !$student)
+		{
+			$url = new moodle_url('/user/profile.php', array('id'=>$object->mentorid));
+			$link = html_writer::link($url, $object->mentorid);
+			$tableHead[] = '<a class="order" id="mentorid" href="">Mentor<br />ID</a>';
+			$tableContent[] = $link;
 		}
 		
 		$tableContent[] = "<a target='_blank' href='".$CFG->wwwroot."/mod/quizgrading/pregled.php?quizid=".$quizid."&attempt_id=".$object->attempt_id."&gradingid=".$gradingid."'>pregled</a>";

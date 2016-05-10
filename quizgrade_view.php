@@ -207,6 +207,14 @@ $(document).ready(function() {
 		}
 	});
 	
+	$("#izvozBtnRez").click(function() {
+		
+		{
+			window.location.href = "<?php echo $CFG->wwwroot; ?>/mod/quizgrading/izvoz_rez.php?datum=<?php echo $datum; ?>&os=<?php echo $os; ?>&booking=<?php echo $booking; ?>&leto=<?php echo $solsko_leto; ?>&quizid=<?php echo $quiz->id; ?>";
+			return false;
+		}
+	});
+	
 	$("#quizHolder").on('click','button',function() {
 		$.get( "<?php echo $CFG->wwwroot; ?>/mod/quizgrading/ajax.php?st_dresa=1&page="+(page-1)+"&orderby="+orderby+"&order="+order+"&datum=<?php echo $datum; ?>&os=<?php echo $os; ?>&booking=<?php echo $booking; ?>&leto=<?php echo $solsko_leto; ?>&action=generiraj_startne_st&gradingid=<?php echo $cm->id; ?>&quizid="+<?php echo $quiz->id; ?>, function( data ) {
 		  $( "#quizHolder" ).html(data.result);
@@ -274,6 +282,11 @@ if ($mform->is_cancelled()) {
 }
 
 $solska_leta = get_solska_leta($quiz->id,null,$cm->id);
+
+$query = "SELECT gr.*,cm.id cmid FROM {course_modules} cm,{quizgrading} gr WHERE cm.instance=gr.id AND cm.id=".$cm->id;
+	
+$gradingConfig = $DB->get_record_sql($query);
+
 ?>
 </div>
 <!--
@@ -284,6 +297,9 @@ $solska_leta = get_solska_leta($quiz->id,null,$cm->id);
 <div style="margin-top:50px;">
 	<h3 style="float:left;">Rezultati:</h3>
 	<button style="float:right;" id="izvozBtn">Izvozi CSV</button>
+	<?php if($gradingConfig->tip_instance != "1"): ?>
+		<button type="button" style="float:right;" id="izvozBtnRez">Izvozi rezultate</button>
+	<?php endif; ?>
 	<!--<button style="float:right;" id="osveziBtn">Osveži</button>-->
 	<button style="float:right;" id="preracunajBtn">Prenos</button>
 </div>

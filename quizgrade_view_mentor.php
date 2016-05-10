@@ -43,6 +43,7 @@ var order='ASC';
 var orderby='';
 $(document).ready(function() {
 	$("#izvozBtn").blur();
+	$("#izvozBtnRez").blur();
 	/*
 	$(window).bind('beforeunload',function(){
 
@@ -102,6 +103,7 @@ $(document).ready(function() {
 		if(event.keyCode==13)
 		{
 			$("#izvozBtn").blur();
+			$("#izvozBtnRez").blur();
 			//preracunano = 0;
 			var id = $(this).attr('id');
 			var value = $(this).val();	
@@ -261,8 +263,15 @@ $(document).ready(function() {
 			return false;
 		}
 	});
+	$("#izvozBtnRez").click(function() {
+		
+		{
+			window.location.href = "<?php echo $CFG->wwwroot; ?>/mod/quizgrading/izvoz_rez.php?&mentor=1&datum=<?php echo $datum; ?>&leto=<?php echo $solsko_leto; ?>&os=<?php echo $os; ?>&booking=<?php echo $booking; ?>&quizid=<?php echo $quiz->id; ?>";
+			return false;
+		}
+	});
 	
-	$("#quizHolder").on('click','button',function() {
+	$("#generirajStartne").on('click',function() {
 		$.get( "<?php echo $CFG->wwwroot; ?>/mod/quizgrading/ajax.php?st_dresa=1&page="+(page-1)+"&orderby="+orderby+"&order="+order+"&leto=<?php echo $solsko_leto; ?>&datum=<?php echo $datum; ?>&os=<?php echo $os; ?>&booking=<?php echo $booking; ?>&action=generiraj_startne_st_mentor&gradingid=<?php echo $cm->id; ?>&quizid="+<?php echo $quiz->id; ?>, function( data ) {
 		  $( "#quizHolder" ).html(data.result);
 		},"json");
@@ -330,6 +339,10 @@ if ($mform->is_cancelled()) {
 <div style="margin-top:50px;">
 	<h3 style="float:left;">Rezultati:</h3>
 	<button type="button" style="float:right;" id="izvozBtn">Izvozi CSV</button>
+	<?php if($gradingConfig->tip_instance != "1"): ?>
+		<button type="button" style="float:right;" id="izvozBtnRez">Izvozi rezultate</button>
+		<button id="generirajStartne" type='button' style="float:right;">Generiraj štartne št.</button>
+	<?php endif; ?>
 	<!--<button style="float:right;" id="preracunajBtn">Preračunaj</button>-->
 	<!--<button style="float:right;" id="osveziBtn">Osveži</button>-->
 	<!--<button style="float:right;" id="preracunajBtn">Prenos</button>-->
